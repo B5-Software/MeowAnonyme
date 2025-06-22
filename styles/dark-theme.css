@@ -1,0 +1,49 @@
+:root {
+  --background-color: #1e1e1e;
+  --text-color: #e0e0e0;
+}
+
+.title-bar {
+  background-color: #121212;
+}
+
+.toolbar {
+  background-color: #2d2d2d;
+  border-bottom-color: #444;
+}
+
+.url-bar {
+  background-color: #3a3a3a;
+}
+
+#url-input {
+  color: #e0e0e0;
+}
+
+.tab-bar {
+  background-color: #252526;
+  border-bottom-color: #444;
+}
+
+.tab {
+  background-color: #2d2d2d;
+  border-right-color: #444;
+}
+
+.tab.active {
+  background-color: #1e1e1e;
+}
+
+.log-panel {
+  background-color: #252526;
+  border-top-color: #444;
+}
+
+.log-header {
+  border-bottom-color: #444;
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}/* 深色主题样式 */

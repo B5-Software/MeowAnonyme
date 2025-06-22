@@ -1,0 +1,70 @@
+{
+  "name": "meowanonyme",
+  "version": "1.0.0",
+  "main": "src/main.js",
+  "description": "Meow Anonyme - Anonymous Browser with Privacy Protection and Ad Blocking",
+  "author": "B5-Software",
+  "homepage": "https://github.com/B5-Software/MeowAnonyme",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --inspect=5858",
+    "test-privacy": "start test-privacy.html",
+    "build": "electron-builder",
+    "build-win": "electron-builder --win",
+    "build-mac": "electron-builder --mac",
+    "build-linux": "electron-builder --linux",
+    "dist": "npm run build"
+  },
+  "build": {
+    "appId": "com.github.B5-Software.MeowAnonyme",
+    "productName": "Meow Anonyme",
+    "directories": {
+      "output": "dist"
+    },    "files": [
+      "src/**/*",
+      "views/**/*",
+      "styles/**/*",
+      "assets/**/*",
+      "node_modules/**/*",
+      "package.json",
+      "!src/tor/**/*",
+      "!src/torrc"
+    ],    "extraResources": [
+      {
+        "from": "src/tor",
+        "to": "tor",
+        "filter": ["**/*"]
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icons/icon.ico",
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "assets/icons/icon.icns",
+      "category": "public.app-category.utilities"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "assets/icons/icon.png",
+      "category": "Network"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "assets/icons/icon.ico",
+      "uninstallerIcon": "assets/icons/icon.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }  },
+  "dependencies": {
+    "electron-store": "^8.2.0",
+    "jsqr": "^1.4.0"
+  },
+  "devDependencies": {
+    "electron": "^36.5.0",
+    "electron-builder": "^26.0.12"
+  }
+}

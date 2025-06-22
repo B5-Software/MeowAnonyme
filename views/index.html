@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meow Anonyme</title>
+  <link rel="stylesheet" href="../assets/fonts/all.min.css">
+  <style>
+    /* 主题变量 */
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8f9fa;
+      --bg-tertiary: #e9ecef;
+      --text-primary: #212529;
+      --text-secondary: #6c757d;
+      --border-color: #dee2e6;
+      --accent-primary: #4ecdc4;
+      --accent-secondary: #ff6b6b;
+      --shadow: rgba(0, 0, 0, 0.1);
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #1a1a1a;
+      --bg-secondary: #2d2d2d;
+      --bg-tertiary: #404040;
+      --text-primary: #ffffff;
+      --text-secondary: #adb5bd;
+      --border-color: #495057;
+      --accent-primary: #4ecdc4;
+      --accent-secondary: #ff6b6b;
+      --shadow: rgba(0, 0, 0, 0.3);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Segoe UI', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      transition: all 0.3s ease;
+    }
+
+    .title-bar {
+      height: 48px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      font-weight: 600;
+      font-size: 14px;
+      -webkit-app-region: drag;
+      z-index: 1000;
+    }
+
+    .window-controls {
+      display: flex;
+      gap: 8px;
+      -webkit-app-region: no-drag;
+    }
+
+    .window-controls button {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      font-size: 14px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .window-controls button:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+
+    .window-controls button:active {
+      transform: scale(0.95);
+    }
+
+    .tor-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 4px 12px;
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+    }
+
+    .tor-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ffc107;
+      animation: pulse 2s infinite;
+    }
+
+    .tor-indicator.connected {
+      background: #28a745;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .toolbar {
+      height: 56px;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 12px;
+      z-index: 999;
+    }
+
+    .nav-controls, .actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .nav-controls button, .actions button {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 4px var(--shadow);
+    }
+
+    .nav-controls button:hover, .actions button:hover {
+      background: var(--accent-primary);
+      color: white;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px var(--shadow);
+    }
+
+    .url-bar {
+      flex: 1;
+      height: 40px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      box-shadow: 0 2px 4px var(--shadow);
+      transition: all 0.2s ease;
+    }
+
+    .url-bar:focus-within {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.1);
+    }
+
+    .security-indicator {
+      color: var(--accent-primary);
+      margin-right: 12px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    #url-input {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--text-primary);
+      font-size: 14px;
+    }
+
+    #url-input::placeholder {
+      color: var(--text-secondary);
+    }
+
+    #bookmark-btn {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 16px;
+      cursor: pointer;
+      margin-left: 12px;
+      transition: color 0.2s ease;
+    }
+
+    #bookmark-btn:hover {
+      color: var(--accent-secondary);
+    }
+
+    .tab-bar {
+      height: 40px;
+      background: var(--bg-tertiary);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 8px;
+    }
+
+    .tabs-container {
+      display: flex;
+      flex: 1;
+      overflow-x: auto;
+      gap: 4px;
+    }    .tab {
+      height: 32px;
+      min-width: 120px;
+      max-width: 200px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px 8px 0 0;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tab::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+    }
+
+    .tab:hover::before {
+      transform: translateX(0);
+    }
+
+    .tab.active {
+      background: var(--accent-primary);
+      color: white;
+      border-color: var(--accent-primary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(78, 205, 196, 0.3);
+    }
+
+    .tab.active::before {
+      display: none;
+    }
+
+    .tab.pinned {
+      min-width: 40px;
+      max-width: 40px;
+      padding: 0;
+      justify-content: center;
+    }
+
+    .tab.pinned .tab-title {
+      display: none;
+    }
+
+    .tab.pinned .tab-close {
+      display: none;
+    }
+
+    .tab.muted .tab-title::after {
+      content: ' 🔇';
+    }
+
+    .tab-title {
+      flex: 1;
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tab-close {
+      background: none;
+      border: none;
+      color: inherit;
+      font-size: 12px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      cursor: pointer;
+      margin-left: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .tab-close:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    #new-tab-btn {
+      width: 32px;
+      height: 32px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 50%;
+      color: var(--text-primary);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    #new-tab-btn:hover {
+      background: var(--accent-primary);
+      color: white;
+    }
+
+    .content-area {
+      flex: 1;
+      background: var(--bg-primary);
+      position: relative;
+    }
+
+    webview {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }    /* 面板样式 */
+    .log-panel, .bookmark-panel {
+      position: fixed;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      box-shadow: 0 8px 32px var(--shadow);
+      backdrop-filter: blur(20px);
+      z-index: 2000;
+    }
+
+    .log-panel {
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(700px, 90vw);
+      height: 320px;
+      display: none;
+      flex-direction: column;
+    }
+
+    .bookmark-panel {
+      top: 70px;
+      right: 20px;
+      width: min(380px, 90vw);
+      height: 480px;
+      display: none;
+      flex-direction: column;
+    }
+
+    .panel-header {
+      padding: 16px 20px;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      border-radius: 12px 12px 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .panel-header h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .panel-header button {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 18px;
+      cursor: pointer;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+    }
+
+    .panel-header button:hover {
+      background: var(--accent-secondary);
+      color: white;
+    }
+
+    .log-content {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      font-family: 'Monaco', 'Consolas', monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    #bookmark-list {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      background: var(--bg-primary);
+    }
+
+    .bookmark-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .bookmark-title {
+      font-size: 14px;
+      color: var(--text-primary);
+      text-decoration: none;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .bookmark-url {
+      font-size: 12px;
+      color: var(--text-secondary);
+      display: block;
+      margin-top: 4px;
+    }
+
+    .bookmark-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .bookmark-actions button {
+      background: var(--accent-primary);
+      border: none;
+      color: white;
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .bookmark-actions button:hover {
+      background: var(--accent-secondary);
+    }
+
+    .about-text {
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.6;
+      text-align: center;
+      padding: 16px;
+      background: var(--bg-primary);
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    /* 右键菜单 */
+    .context-menu {
+      position: fixed;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      box-shadow: 0 4px 16px var(--shadow);
+      padding: 8px 0;
+      z-index: 10000;
+      display: none;
+      min-width: 160px;
+    }
+
+    .context-menu-item {
+      padding: 8px 16px;
+      font-size: 14px;
+      color: var(--text-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s ease;
+    }
+
+    .context-menu-item:hover {
+      background: var(--bg-secondary);
+    }
+
+    .context-menu-item.disabled {
+      color: var(--text-secondary);
+      cursor: not-allowed;
+    }
+
+    .context-menu-item.disabled:hover {
+      background: transparent;
+    }
+
+    .context-menu-separator {
+      height: 1px;
+      background: var(--border-color);
+      margin: 4px 0;
+    }
+  </style>
+</head>
+<body data-theme="light">
+  <div class="title-bar">
+    <div class="window-controls">
+      <button id="minimize-btn" title="最小化"><i class="fa-solid fa-window-minimize"></i></button>
+      <button id="maximize-btn" title="最大化"><i class="fa-regular fa-square"></i></button>
+      <button id="close-btn" title="关闭"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="title">Meow Anonyme Browser</div>
+    <div class="tor-status">
+      <span id="connection-status">系统代理</span>
+      <div class="tor-indicator" id="tor-indicator"></div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="nav-controls">
+      <button id="back-btn" title="返回"><i class="fa-solid fa-arrow-left"></i></button>
+      <button id="forward-btn" title="前进"><i class="fa-solid fa-arrow-right"></i></button>
+      <button id="refresh-btn" title="刷新"><i class="fa-solid fa-rotate-right"></i></button>
+      <button id="home-btn" title="主页"><i class="fa-solid fa-house"></i></button>
+    </div>
+    
+    <div class="url-bar">
+      <div class="security-indicator" title="安全状态"><i class="fa-solid fa-lock"></i></div>
+      <input type="text" id="url-input" placeholder="输入网址或搜索内容...">
+      <button id="bookmark-btn" title="收藏"><i class="fa-regular fa-star"></i></button>
+    </div>
+      <div class="actions">
+      <button id="adblock-btn" title="广告拦截"><i class="fa-solid fa-shield-halved"></i></button>
+      <button id="download-btn" title="下载"><i class="fa-solid fa-download"></i></button>
+      <button id="screenshot-btn" title="截图"><i class="fa-solid fa-camera"></i></button>
+      <button id="show-bookmarks-btn" title="收藏夹"><i class="fa-solid fa-bookmark"></i></button>
+      <button id="settings-btn" title="设置"><i class="fa-solid fa-gear"></i></button>
+      <button id="show-log-btn" title="Tor日志"><i class="fa-solid fa-scroll"></i></button>
+    </div>
+  </div>
+
+  <div class="tab-bar">
+    <div class="tabs-container">
+      <div class="tab active" data-id="1">
+        <span class="tab-title">新标签页</span>
+        <button class="tab-close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+    </div>
+    <button id="new-tab-btn" title="新标签页"><i class="fa-solid fa-plus"></i></button>
+  </div>
+  <div class="content-area">
+    <webview id="webview" src="" allowpopups webSecurity="false" nodeintegration="false"></webview>
+  </div>
+
+  <!-- Tor日志面板 -->
+  <div class="log-panel" id="log-panel">
+    <div class="panel-header">
+      <h3>Tor 连接日志</h3>
+      <button id="close-log-btn"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="log-content" id="log-content"></div>
+  </div>
+
+  <!-- 收藏夹面板 -->
+  <div class="bookmark-panel" id="bookmark-panel">
+    <div class="panel-header">
+      <h3>收藏夹</h3>
+      <div>
+        <button id="export-bookmarks-btn" title="导出收藏夹"><i class="fa-solid fa-download"></i></button>
+        <button id="import-bookmarks-btn" title="导入收藏夹"><i class="fa-solid fa-upload"></i></button>
+        <button id="close-bookmark-panel"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+    </div>    <div id="bookmark-list"></div>
+  </div>
+
+  <!-- 标签页右键菜单 -->
+  <div class="context-menu" id="tab-context-menu">
+    <div class="context-menu-item" id="duplicate-tab">
+      <i class="fa-solid fa-copy"></i>
+      复制标签页
+    </div>
+    <div class="context-menu-item" id="mute-tab">
+      <i class="fa-solid fa-volume-mute"></i>
+      静音标签页
+    </div>
+    <div class="context-menu-separator"></div>
+    <div class="context-menu-item" id="reload-tab">
+      <i class="fa-solid fa-rotate-right"></i>
+      重新加载
+    </div>
+    <div class="context-menu-item" id="pin-tab">
+      <i class="fa-solid fa-thumbtack"></i>
+      固定标签页
+    </div>
+    <div class="context-menu-separator"></div>
+    <div class="context-menu-item" id="close-tab-menu">
+      <i class="fa-solid fa-xmark"></i>
+      关闭标签页
+    </div>
+    <div class="context-menu-item" id="close-other-tabs">
+      <i class="fa-solid fa-xmark"></i>
+      关闭其他标签页
+    </div>
+  </div>
+
+  <script src="../src/renderer.js"></script>
+</body>
+</html>

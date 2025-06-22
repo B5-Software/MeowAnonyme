@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meow Anonyme - 设置中心</title>
+  <link rel="stylesheet" href="../assets/fonts/all.min.css">
+  <link rel="stylesheet" href="../styles/settings.css">
+</head>
+<body>
+  <div class="settings-container">
+    <div class="settings-header">
+      <h1 class="settings-title">设置中心</h1>
+      <button class="close-btn" id="close-settings" title="关闭">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>    <div class="settings-content">
+      <!-- 外观设置 -->
+      <div class="settings-section">
+        <h2 class="section-title">
+          <i class="fa-solid fa-palette"></i>
+          外观设置
+        </h2>
+        <div class="form-group">
+          <label>主题模式</label>
+          <div class="radio-group">
+            <label class="radio-item">
+              <input type="radio" name="theme" value="system">
+              <span>🌓 跟随系统</span>
+            </label>
+            <label class="radio-item">
+              <input type="radio" name="theme" value="light">
+              <span>☀️ 浅色模式</span>
+            </label>
+            <label class="radio-item">
+              <input type="radio" name="theme" value="dark">
+              <span>🌙 深色模式</span>
+            </label>
+          </div>
+        </div>        <div class="form-group">
+          <label>主题色</label>
+          <div class="color-group">
+            <button class="color-btn" data-color="#4ecdc4" style="background: #4ecdc4;" title="默认青色"></button>
+            <button class="color-btn" data-color="#ff6b6b" style="background: #ff6b6b;" title="珊瑚红"></button>
+            <button class="color-btn" data-color="#4dabf7" style="background: #4dabf7;" title="天空蓝"></button>
+            <button class="color-btn" data-color="#69db7c" style="background: #69db7c;" title="薄荷绿"></button>
+            <button class="color-btn" data-color="#ffd43b" style="background: #ffd43b;" title="阳光黄"></button>
+            <button class="color-btn" data-color="#da77f2" style="background: #da77f2;" title="紫罗兰"></button>
+            <input type="color" id="custom-color-picker" title="自定义颜色" style="width: 40px; height: 40px; border: 2px solid var(--border-color); border-radius: 8px; cursor: pointer; -webkit-app-region: no-drag;">
+          </div>
+        </div>
+      </div>
+
+      <!-- 浏览设置 -->
+      <div class="settings-section">
+        <h2 class="section-title">
+          <i class="fa-solid fa-globe"></i>
+          浏览设置
+        </h2>
+        <div class="form-group">
+          <label>主页地址</label>
+          <input type="text" id="homepage-input" placeholder="https://www.bing.com/">
+        </div>
+        <div class="form-group">
+          <label>搜索引擎</label>
+          <select id="search-engine">
+            <option value="bing">Bing</option>
+            <option value="google">Google</option>
+            <option value="duckduckgo">DuckDuckGo</option>
+            <option value="startpage">Startpage</option>
+            <option value="searx">SearX</option>
+            <option value="custom">自定义</option>
+          </select>
+        </div>
+        <div class="form-group" id="custom-search-group" style="display: none;">
+          <label>自定义搜索URL</label>
+          <input type="text" id="custom-search-url" placeholder="https://example.com/search?q=%s">
+          <small style="color: var(--text-secondary); font-size: 12px;">使用 %s 作为搜索词占位符</small>
+        </div>
+      </div>
+
+      <!-- Tor连接 -->
+      <div class="settings-section">
+        <h2 class="section-title">
+          <i class="fa-solid fa-shield-halved"></i>
+          Tor 连接
+        </h2>
+        <div class="form-group">
+          <div class="tor-status-container">
+            <div class="tor-switch-container">
+              <label class="tor-switch">
+                <input type="checkbox" id="tor-switch">
+                <span class="tor-slider"></span>
+              </label>
+              <span id="tor-status-text">启动 Tor 服务</span>
+            </div>
+            <div class="tor-progress-container" id="tor-progress-container" style="display: none;">
+              <div class="tor-progress-bar">
+                <div class="tor-progress-fill" id="tor-progress-fill"></div>
+              </div>
+              <div class="tor-progress-text" id="tor-progress-text">正在启动...</div>
+            </div>
+          </div>
+        </div>
+        <div class="button-group">
+          <button id="show-log-btn" class="button-secondary">
+            <i class="fa-solid fa-file-lines"></i>
+            查看日志
+          </button>
+          <button id="clear-data-btn" class="button-danger">
+            <i class="fa-solid fa-trash"></i>
+            清除痕迹
+          </button>
+        </div>
+      </div>      <!-- 网桥设置 -->
+      <div class="settings-section">
+        <h2 class="section-title">
+          <i class="fa-solid fa-bridge"></i>
+          网桥配置
+        </h2>
+        <div class="form-group">
+          <div class="tor-switch-container">
+            <label class="tor-switch">
+              <input type="checkbox" id="use-bridges-switch">
+              <span class="tor-slider"></span>
+            </label>
+            <span>使用网桥</span>
+          </div>
+        </div>        <div class="form-group">
+          <label>网桥类型</label>
+          <select id="bridge-type">
+            <option value="obfs4">obfs4 (需要手动添加地址)</option>
+            <option value="snowflake">snowflake (内置配置)</option>
+            <option value="meek-azure">meek-azure (内置配置)</option>
+          </select>
+        </div>
+        <div class="bridge-list" id="bridge-list"></div>
+        <div class="input-group" id="manual-bridge-input">
+          <input type="text" id="bridge-input" placeholder="粘贴obfs4网桥地址或扫码导入">
+          <button id="add-bridge-btn">
+            <i class="fa-solid fa-plus"></i>
+            添加
+          </button>
+          <button id="scan-qr-btn" class="button-secondary">
+            <i class="fa-solid fa-qrcode"></i>
+            扫码
+          </button>
+        </div>
+        <div class="bridge-info" id="bridge-info" style="display: none;">
+          <p style="color: var(--text-secondary); font-size: 12px; margin: 8px 0;">
+            <i class="fa-solid fa-info-circle"></i>
+            当前选择的网桥类型无需手动配置地址，将自动使用内置配置。
+          </p>
+        </div>
+        <div class="button-group">
+          <button id="save-bridge-config-btn">
+            <i class="fa-solid fa-save"></i>
+            保存网桥配置
+          </button>
+          <button id="reset-bridge-config-btn" class="button-secondary">
+            <i class="fa-solid fa-rotate-left"></i>
+            重置为官方配置
+          </button>
+        </div>
+        <video id="qr-video" class="qr-video" autoplay></video>
+      </div>
+
+      <!-- 代理设置 -->
+      <div class="settings-section">
+        <h2 class="section-title">
+          <i class="fa-solid fa-globe"></i>
+          代理配置
+        </h2>
+        <div class="form-group">
+          <label class="checkbox-item">
+            <input type="checkbox" id="proxy-enabled">
+            <span>使用前置代理连接 Tor</span>
+          </label>
+        </div>
+        <div class="form-group">
+          <label>代理地址</label>
+          <input type="text" id="proxy-host" placeholder="">
+        </div>
+        <div class="form-group">
+          <label>用户名 (可选)</label>
+          <input type="text" id="proxy-user" placeholder="留空表示无需认证">
+        </div>
+        <div class="form-group">
+          <label>密码 (可选)</label>
+          <input type="password" id="proxy-pass" placeholder="留空表示无需认证">
+        </div>
+        <div class="button-group">
+          <button id="quick-clash" class="button-secondary">
+            <i class="fa-solid fa-bolt"></i>
+            Clash 默认端口
+          </button>
+          <button id="quick-v2ray" class="button-secondary">
+            <i class="fa-solid fa-rocket"></i>
+            V2Ray 默认端口
+          </button>        </div>
+      </div>
+
+      <!-- Torrc 配置编辑器 -->
+      <div class="settings-section">
+        <h2 class="section-title">
+          <i class="fa-solid fa-file-code"></i>
+          Torrc 配置编辑
+        </h2>
+        <div class="form-group">
+          <div class="torrc-editor-container">
+            <div class="torrc-toolbar">
+              <button id="reload-torrc" class="button-secondary">
+                <i class="fa-solid fa-sync-alt"></i>
+                重新载入
+              </button>
+              <button id="save-torrc" class="button-primary">
+                <i class="fa-solid fa-save"></i>
+                保存配置
+              </button>
+              <button id="reset-torrc" class="button-danger">
+                <i class="fa-solid fa-undo"></i>
+                重置默认
+              </button>
+            </div>            <div class="torrc-editor-wrapper">
+              <textarea id="torrc-editor" placeholder="Torrc 配置内容将在这里显示..." rows="15"></textarea>
+            </div>
+            <div class="torrc-help">
+              <p><i class="fa-solid fa-info-circle"></i> 提示：</p>
+              <ul>
+                <li>修改 torrc 配置可能影响 Tor 连接，请谨慎操作</li>
+                <li>保存后需要重启 Tor 服务才能生效</li>
+                <li>如遇问题可点击"重置默认"恢复配置</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 关于 -->
+      <div class="settings-section">
+        <h2 class="section-title">
+          <i class="fa-solid fa-info-circle"></i>
+          关于
+        </h2>
+        <div class="about-text">
+          <p>Meow Anonyme</p>
+          <p>由 B5-Software 开发的专注于隐私保护的浏览器</p>
+          <p style="margin-top: 16px;">
+            <strong>Made by B5-Software</strong><br>
+            <a href="#" id="github-link" style="color: var(--accent-primary); text-decoration: none;">
+              <i class="fa-brands fa-github"></i> 访问 GitHub 项目
+            </a>
+          </p>
+          <p style="font-size: 12px; margin-top: 12px;">为了更好的隐私保护，启用Tor连接试试喵~ 🎉</p>
+        </div>      </div>
+    </div>
+  </div>
+  <script>
+    let currentTheme = 'light';
+    
+    // 应用主题
+    function applyTheme(theme) {
+      currentTheme = theme;
+      document.documentElement.setAttribute('data-theme', theme);
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      try {
+        // 获取配置并应用主题
+        let config = await window.electronAPI.getConfig();
+        applyTheme(config.theme || 'light');
+
+        // 定义一个函数来获取最新配置
+        async function updateConfigValue(updates) {
+          config = await window.electronAPI.getConfig();
+          const newConfig = { ...config, ...updates };
+          await window.electronAPI.updateConfig(newConfig);
+          config = newConfig; // 更新本地config对象
+          return newConfig;
+        }
+
+        // 绑定关闭按钮
+        document.getElementById('close-settings').addEventListener('click', () => {
+          window.close();
+        });        // 主题单选按钮
+        document.querySelectorAll('input[name="theme"]').forEach(radio => {
+          radio.checked = (radio.value === config.theme);
+          radio.addEventListener('change', async (e) => {
+            if (e.target.checked) {
+              applyTheme(e.target.value);
+              await updateConfigValue({ theme: e.target.value });
+              showNotification('主题已切换！');
+              // 通知主窗口更新主题
+              if (window.opener) {
+                window.opener.postMessage({ type: 'theme-change', theme: e.target.value }, '*');
+              }
+            }
+          });
+        });
+
+        // 主题色选择
+        const colorBtns = document.querySelectorAll('.color-btn');
+        const customColorPicker = document.getElementById('custom-color-picker');
+        const currentColor = config.accentColor || '#4ecdc4';
+        
+        // 设置自定义颜色选择器的值
+        customColorPicker.value = currentColor;
+        
+        colorBtns.forEach(btn => {
+          const color = btn.dataset.color;
+          if (color === currentColor) {
+            btn.classList.add('active');
+          }
+            btn.addEventListener('click', async () => {
+            colorBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // 更新CSS变量
+            document.documentElement.style.setProperty('--accent-primary', color);
+              // 保存配置
+            await updateConfigValue({ accentColor: color });
+            showNotification('主题色已更新！');
+            
+            // 通知主窗口更新主题色
+            if (window.opener) {
+              window.opener.postMessage({ type: 'color-change', color: color }, '*');
+            }
+          });        });
+
+        // 自定义颜色选择器
+        customColorPicker.addEventListener('change', async (e) => {
+          const color = e.target.value;
+          
+          // 取消所有预设颜色的激活状态
+          colorBtns.forEach(b => b.classList.remove('active'));
+          
+          // 更新CSS变量
+          document.documentElement.style.setProperty('--accent-primary', color);
+          
+          // 保存配置
+          await updateConfigValue({ accentColor: color });
+          showNotification('自定义主题色已应用！');
+          
+          // 通知主窗口更新主题色
+          if (window.opener) {
+            window.opener.postMessage({ type: 'color-change', color: color }, '*');
+          }
+        });        // 主页设置
+        const homepageInput = document.getElementById('homepage-input');
+        homepageInput.value = config.homepage || 'https://www.bing.com/';
+        homepageInput.addEventListener('blur', async () => {
+          await updateConfigValue({ homepage: homepageInput.value });
+        });
+
+        // 搜索引擎设置
+        const searchEngineSelect = document.getElementById('search-engine');
+        const customSearchGroup = document.getElementById('custom-search-group');
+        const customSearchUrl = document.getElementById('custom-search-url');
+        
+        searchEngineSelect.value = config.searchEngine || 'bing';
+        customSearchUrl.value = config.customSearchUrl || '';
+          if (searchEngineSelect.value === 'custom') {
+          customSearchGroup.style.display = 'block';
+        }
+        
+        searchEngineSelect.addEventListener('change', async () => {
+          if (searchEngineSelect.value === 'custom') {
+            customSearchGroup.style.display = 'block';
+          } else {
+            customSearchGroup.style.display = 'none';
+          }
+          await updateConfigValue({ searchEngine: searchEngineSelect.value });
+        });
+        
+        customSearchUrl.addEventListener('blur', async () => {
+          await updateConfigValue({ customSearchUrl: customSearchUrl.value });
+        });
+
+        // Tor开关
+        const torSwitch = document.getElementById('tor-switch');
+        const torStatusText = document.getElementById('tor-status-text');
+        const torProgressContainer = document.getElementById('tor-progress-container');
+          torSwitch.checked = config.torEnabled || false;
+        if (torSwitch.checked) {
+          updateTorStatus(true);
+        } else {
+          torStatusText.textContent = '启动 Tor 服务';
+        }
+          torSwitch.addEventListener('change', async () => {
+          const isEnabled = torSwitch.checked;
+          
+          if (isEnabled) {
+            torStatusText.textContent = '正在启动 Tor...';
+            torProgressContainer.style.display = 'block';
+            updateTorProgress(0, '正在启动 Tor 服务...');
+            startProgressMonitoring(); // 开始监控进度
+            
+            try {
+              await window.electronAPI.startTor();
+              showNotification('Tor 服务已启动！');
+            } catch (e) {
+              showNotification('Tor 启动失败: ' + e.message, 'error');
+              torSwitch.checked = false;
+              updateTorStatus(false);
+              stopProgressMonitoring();
+            }
+          } else {
+            torStatusText.textContent = '正在停止 Tor...';
+            torProgressContainer.style.display = 'none';
+            stopProgressMonitoring(); // 停止监控进度
+            
+            try {
+              await window.electronAPI.stopTor();
+              updateTorStatus(false);
+              showNotification('Tor 服务已停止！');
+            } catch (e) {
+              showNotification('Tor 停止失败: ' + e.message, 'error');
+            }
+          }
+        });
+
+        // GitHub链接
+        document.getElementById('github-link').addEventListener('click', (e) => {
+          e.preventDefault();
+          window.electronAPI.openExternal('https://github.com/B5-Software/MeowAnonyme');
+        });
+
+        // 代理配置
+        const proxyEnabled = document.getElementById('proxy-enabled');
+        const proxyHost = document.getElementById('proxy-host');
+        const proxyUser = document.getElementById('proxy-user');
+        const proxyPass = document.getElementById('proxy-pass');
+
+        proxyEnabled.checked = config.proxyEnabled || false;
+        proxyHost.value = config.proxyConfig?.host || '';
+        proxyUser.value = config.proxyConfig?.username || '';
+        proxyPass.value = config.proxyConfig?.password || '';
+        
+        proxyEnabled.addEventListener('change', async (e) => {
+          await updateConfigValue({ proxyEnabled: e.target.checked });
+        });
+
+        proxyHost.addEventListener('blur', async (e) => {
+          const currentConfig = await window.electronAPI.getConfig();
+          await updateConfigValue({ 
+            proxyConfig: { ...currentConfig.proxyConfig, host: e.target.value } 
+          });
+        });
+
+        proxyUser.addEventListener('blur', async (e) => {
+          const currentConfig = await window.electronAPI.getConfig();
+          await updateConfigValue({ 
+            proxyConfig: { ...currentConfig.proxyConfig, username: e.target.value } 
+          });
+        });
+        
+        proxyPass.addEventListener('blur', async (e) => {
+          const currentConfig = await window.electronAPI.getConfig();
+          await updateConfigValue({ 
+            proxyConfig: { ...currentConfig.proxyConfig, password: e.target.value } 
+          });
+        });
+        
+        // 网桥配置
+        const bridgeType = document.getElementById('bridge-type');
+        const useBridgesSwitch = document.getElementById('use-bridges-switch');
+        const manualBridgeInput = document.getElementById('manual-bridge-input');
+        const bridgeInfo = document.getElementById('bridge-info');
+        
+        bridgeType.value = config.bridgeType || 'obfs4';
+        useBridgesSwitch.checked = config.useBridges || false;
+        renderBridgeList(config.bridges || []);
+        updateBridgeTypeUI(bridgeType.value);
+        
+        bridgeType.addEventListener('change', async (e) => {
+          const selectedType = e.target.value;
+          updateBridgeTypeUI(selectedType);
+          await updateConfigValue({ bridgeType: selectedType });
+          
+          // 自动为内置类型配置网桥
+          if (selectedType === 'snowflake' || selectedType === 'meek-azure') {
+            autoConfigureBridge(selectedType);
+          }
+        });
+        
+        useBridgesSwitch.addEventListener('change', async (e) => {
+          await updateConfigValue({ useBridges: e.target.checked });
+          showNotification(e.target.checked ? '已启用网桥功能' : '已禁用网桥功能');
+        });
+
+        // 更新网桥类型UI显示
+        function updateBridgeTypeUI(bridgeType) {
+          if (bridgeType === 'obfs4') {
+            manualBridgeInput.style.display = 'flex';
+            bridgeInfo.style.display = 'none';
+          } else {
+            manualBridgeInput.style.display = 'none';
+            bridgeInfo.style.display = 'block';
+          }
+        }
+
+        // 自动配置内置网桥
+        async function autoConfigureBridge(bridgeType) {
+          try {
+            await window.electronAPI.autoConfigureBridge(bridgeType);
+            const newConfig = await window.electronAPI.getConfig();
+            renderBridgeList(newConfig.bridges || []);
+            showNotification(`已自动配置 ${bridgeType} 网桥`);
+          } catch (e) {
+            showNotification(`配置 ${bridgeType} 网桥失败: ` + e.message, 'error');
+          }
+        }// Tor连接 - 这个按钮已被移除，功能通过开关实现        // 显示日志
+        document.getElementById('show-log-btn').addEventListener('click', () => {
+          // 直接打开Tor日志窗口
+          window.electronAPI.openTorLog();
+        });
+
+        // 清除数据
+        document.getElementById('clear-data-btn').addEventListener('click', async () => {
+          if (confirm('确定要清除所有浏览数据吗？此操作不可撤销！')) {
+            try {
+              await window.electronAPI.clearData();
+              showNotification('所有浏览痕迹已清除！');
+            } catch (e) {
+              showNotification('清除失败: ' + e.message, 'error');
+            }
+          }
+        });
+
+        // 添加网桥
+        document.getElementById('add-bridge-btn').addEventListener('click', async () => {
+          const bridgeInput = document.getElementById('bridge-input');
+          const bridge = bridgeInput.value.trim();
+          
+          if (bridge) {
+            try {
+              await window.electronAPI.addBridge(bridge);
+              bridgeInput.value = '';
+              showNotification('网桥已添加！');
+              
+              // 重新获取配置并更新列表
+              const newConfig = await window.electronAPI.getConfig();
+              renderBridgeList(newConfig.bridges || []);
+            } catch (e) {
+              showNotification('添加网桥失败: ' + e.message, 'error');
+            }
+          }
+        });        // 扫码功能
+        document.getElementById('scan-qr-btn').addEventListener('click', async () => {
+          const video = document.getElementById('qr-video');
+          
+          if (video.classList.contains('active')) {
+            // 停止扫码
+            stopQRScanner();
+          } else {
+            // 开始扫码
+            startQRScanner();
+          }
+        });        // 保存网桥配置
+        document.getElementById('save-bridge-config-btn').addEventListener('click', async () => {
+          try {
+            console.log('开始保存网桥配置...');
+            const result = await window.electronAPI.saveBridgeConfig();
+            console.log('保存结果:', result);
+            
+            if (result) {
+              showNotification('网桥配置已保存到 torrc 文件！');
+              
+              // 重新生成torrc以确保配置生效
+              const currentConfig = await window.electronAPI.getConfig();
+              console.log('当前配置:', currentConfig);
+            } else {
+              showNotification('保存网桥配置失败', 'error');
+            }
+          } catch (e) {
+            console.error('保存网桥配置出错:', e);
+            showNotification('保存网桥配置失败: ' + e.message, 'error');
+          }
+        });        // 重置网桥配置
+        document.getElementById('reset-bridge-config-btn').addEventListener('click', async () => {
+          const bridgeType = document.getElementById('bridge-type').value;
+          if (confirm(`确定要重置为官方 ${bridgeType} 网桥配置吗？此操作不可撤销！`)) {
+            try {
+              const result = await window.electronAPI.resetBridgeConfig(bridgeType);
+              showNotification(`网桥配置已重置为官方 ${bridgeType} 默认值！`);
+              
+              // 更新界面
+              renderBridgeList(result.bridges || []);
+              
+              // 更新网桥类型选择
+              document.getElementById('bridge-type').value = result.bridgeType;
+              updateBridgeTypeUI(result.bridgeType);
+            } catch (e) {
+              showNotification('重置网桥配置失败: ' + e.message, 'error');
+            }
+          }
+        });        // 快速设置代理
+        document.getElementById('quick-clash').addEventListener('click', async () => {
+          proxyHost.value = '127.0.0.1:7890';
+          const currentConfig = await window.electronAPI.getConfig();
+          await updateConfigValue({ 
+            proxyConfig: { ...currentConfig.proxyConfig, host: '127.0.0.1:7890' } 
+          });
+          showNotification('已设置 Clash 默认端口！');
+        });
+
+        document.getElementById('quick-v2ray').addEventListener('click', async () => {
+          proxyHost.value = '127.0.0.1:10809';
+          const currentConfig = await window.electronAPI.getConfig();
+          await updateConfigValue({ 
+            proxyConfig: { ...currentConfig.proxyConfig, host: '127.0.0.1:10809' } 
+          });
+          showNotification('已设置 V2Ray 默认端口！');
+        });
+
+      } catch (error) {
+        console.error('设置页面初始化失败:', error);
+        showNotification('设置页面加载失败', 'error');
+      }
+    });
+
+    // 渲染网桥列表
+    function renderBridgeList(bridges) {
+      const container = document.getElementById('bridge-list');
+      container.innerHTML = '';
+      
+      if (bridges.length === 0) {
+        container.innerHTML = `
+          <div class="bridge-item" style="color: var(--text-secondary); text-align: center;">
+            暂无网桥配置
+          </div>
+        `;
+        return;
+      }
+      
+      bridges.forEach(bridge => {
+        const item = document.createElement('div');
+        item.className = 'bridge-item';
+        item.textContent = bridge;
+        container.appendChild(item);
+      });
+    }
+
+    // 显示通知
+    function showNotification(message, type = 'success') {
+      // 创建通知元素
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: ${type === 'error' ? 'var(--accent-secondary)' : 'var(--accent-primary)'};
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px var(--shadow);
+        z-index: 10000;
+        font-size: 14px;
+        font-weight: 500;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      `;
+      notification.textContent = message;
+      
+      document.body.appendChild(notification);
+      
+      // 显示动画
+      setTimeout(() => {
+        notification.style.opacity = '1';
+      }, 100);
+      
+      // 自动隐藏
+      setTimeout(() => {
+        notification.style.opacity = '0';
+        setTimeout(() => {
+          document.body.removeChild(notification);
+        }, 300);
+      }, 3000);
+    }
+
+    // QR扫码相关
+    let qrStream = null;
+    let qrScanner = null;
+
+    async function startQRScanner() {
+      const video = document.getElementById('qr-video');
+      const scanBtn = document.getElementById('scan-qr-btn');
+      
+      try {
+        qrStream = await navigator.mediaDevices.getUserMedia({ 
+          video: { facingMode: 'environment' } 
+        });
+        
+        video.srcObject = qrStream;
+        video.classList.add('active');
+        scanBtn.innerHTML = '<i class="fa-solid fa-stop"></i> 停止扫码';
+        
+        // 这里需要QR扫码库，如果没有就简化处理
+        showNotification('扫码功能已启动，请将二维码对准摄像头');
+        
+      } catch (e) {
+        console.error('启动摄像头失败:', e);
+        showNotification('无法访问摄像头，请检查权限设置', 'error');
+      }
+    }
+
+    function stopQRScanner() {
+      const video = document.getElementById('qr-video');
+      const scanBtn = document.getElementById('scan-qr-btn');
+      
+      if (qrStream) {
+        qrStream.getTracks().forEach(track => track.stop());
+        qrStream = null;
+      }
+      
+      video.classList.remove('active');
+      video.srcObject = null;
+      scanBtn.innerHTML = '<i class="fa-solid fa-qrcode"></i> 扫码';
+      
+      if (qrScanner) {
+        qrScanner.stop();
+        qrScanner = null;
+      }
+    }    // 更新Tor状态显示
+    function updateTorStatus(enabled) {
+      const torStatusText = document.getElementById('tor-status-text');
+      const torProgressContainer = document.getElementById('tor-progress-container');
+      
+      if (enabled) {
+        torStatusText.textContent = 'Tor 服务已启动';
+        // 平滑隐藏进度条
+        torProgressContainer.style.opacity = '0';
+        setTimeout(() => {
+          torProgressContainer.style.display = 'none';
+          torProgressContainer.style.opacity = '1';
+        }, 500);
+      } else {
+        torStatusText.textContent = 'Tor 服务已断开';
+        torProgressContainer.style.display = 'none';
+      }
+    }// 更新Tor进度
+    function updateTorProgress(percent, text) {
+      const progressFill = document.getElementById('tor-progress-fill');
+      const progressText = document.getElementById('tor-progress-text');
+      
+      if (progressFill && progressText) {
+        progressFill.style.width = percent + '%';
+        progressText.textContent = text;
+      }
+    }    // 实时读取Tor日志并更新进度    let torConnected = false; // 添加连接状态标志位
+    async function checkTorProgress() {
+      try {
+        // 如果已经连接成功，不再检查进度
+        if (torConnected) return;
+        
+        const logs = await window.electronAPI.readTorLogFile();
+        if (logs && Array.isArray(logs) && logs.length > 0) {
+          let maxPercent = 0;
+          let latestStatus = '';
+
+          logs.forEach(log => {
+            if (log.message) {
+              const bootstrapMatch = log.message.match(/Bootstrapped (\d+)%.*?:(.*)/);
+              if (bootstrapMatch) {
+                const percent = parseInt(bootstrapMatch[1]);
+                const status = bootstrapMatch[2].trim();
+                if (percent >= maxPercent) {
+                  maxPercent = percent;
+                  latestStatus = status;
+                }
+              }
+            }
+          });
+
+          if (maxPercent > 0) {
+            const torProgressContainer = document.getElementById('tor-progress-container');
+            if (torProgressContainer) {
+              torProgressContainer.style.display = 'block';
+              updateTorProgress(maxPercent, `正在连接 Tor 网络... ${maxPercent}% - ${latestStatus}`);
+              
+              if (maxPercent >= 100 && !torConnected) {
+                torConnected = true; // 设置连接状态
+                // 停止进度监控
+                stopProgressMonitoring();
+                // 平滑隐藏进度条
+                setTimeout(() => {
+                  torProgressContainer.style.opacity = '0';
+                  setTimeout(() => {
+                    torProgressContainer.style.display = 'none';
+                    torProgressContainer.style.opacity = '1';
+                    updateTorStatus(true);
+                    showNotification('Tor 连接成功！');
+                  }, 500);
+                }, 1000);
+              }
+            }
+          }
+        }
+      } catch (e) {
+        console.error('读取Tor日志失败:', e);
+      }
+    }
+
+    // 定期检查Tor连接进度
+    let progressInterval = null;    // 启动Tor时开始监控进度
+    function startProgressMonitoring() {
+      torConnected = false; // 重置连接状态
+      if (progressInterval) clearInterval(progressInterval);
+      progressInterval = setInterval(checkTorProgress, 1000);
+    }
+
+    // 停止监控进度
+    function stopProgressMonitoring() {
+      if (progressInterval) {
+        clearInterval(progressInterval);
+        progressInterval = null;
+      }
+    }
+
+    // 监听Tor状态变化
+    if (window.electronAPI && window.electronAPI.onTorStatus) {
+      window.electronAPI.onTorStatus((status) => {
+        console.log('收到Tor状态更新:', status);
+        const torSwitch = document.getElementById('tor-switch');
+        if (!status.connected && torSwitch) {
+          // Tor已断开
+          torSwitch.checked = false;
+          updateTorStatus(false);
+          stopProgressMonitoring();
+        }      });
+    }    // Torrc 编辑器功能
+    let torrcEditor = null;
+
+    function initTorrcEditor() {
+      torrcEditor = document.getElementById('torrc-editor');
+      
+      if (torrcEditor) {
+        // 加载torrc内容
+        loadTorrcContent();
+        
+        // 工具栏按钮
+        document.getElementById('reload-torrc')?.addEventListener('click', loadTorrcContent);
+        document.getElementById('save-torrc')?.addEventListener('click', saveTorrcContent);
+        document.getElementById('reset-torrc')?.addEventListener('click', resetTorrcContent);
+      }
+    }
+
+    async function loadTorrcContent() {      try {
+        const content = await window.electronAPI.getTorrcContent();
+        if (torrcEditor) {
+          torrcEditor.value = content || '';
+          showNotification('Torrc 配置已载入');
+        }
+      } catch (error) {
+        console.error('Failed to load torrc:', error);
+        showNotification('载入 Torrc 配置失败', 'error');
+      }
+    }
+
+    async function saveTorrcContent() {
+      try {
+        if (torrcEditor) {
+          const content = torrcEditor.value;
+          const success = await window.electronAPI.saveTorrcContent(content);
+          if (success) {
+            showNotification('Torrc 配置已保存，重启 Tor 后生效');
+          } else {
+            showNotification('保存 Torrc 配置失败', 'error');
+          }
+        }
+      } catch (error) {
+        console.error('Failed to save torrc:', error);
+        showNotification('保存 Torrc 配置失败', 'error');
+      }
+    }
+
+    async function resetTorrcContent() {
+      if (confirm('确定要重置 Torrc 配置为默认值吗？此操作无法撤销。')) {
+        try {
+          // 生成默认配置
+          const config = await window.electronAPI.getConfig();
+          await window.electronAPI.updateConfig(config);
+          await loadTorrcContent();
+          showNotification('Torrc 配置已重置为默认值');
+        } catch (error) {
+          console.error('Failed to reset torrc:', error);
+          showNotification('重置 Torrc 配置失败', 'error');
+        }      }
+    }
+
+    // 监听主题变更
+    if (window.electronAPI && window.electronAPI.onThemeChange) {
+      window.electronAPI.onThemeChange((themeData) => {
+        applyTheme(themeData.theme);
+        
+        // 更新主题选择
+        document.querySelectorAll('input[name="theme"]').forEach(radio => {
+          radio.checked = (radio.value === themeData.theme);
+        });
+        
+        // 更新主题色
+        if (themeData.accentColor) {
+          updateAccentColor(themeData.accentColor);
+        }
+      });
+    }
+
+    // 监听Tor进度更新
+    if (window.electronAPI && window.electronAPI.onTorLog) {
+      window.electronAPI.onTorLog((log) => {
+        // 解析Tor启动进度
+        const bootstrapMatch = log.match(/Bootstrapped (\d+)%/);
+        if (bootstrapMatch) {
+          const percent = parseInt(bootstrapMatch[1]);
+          updateTorProgress(percent, `正在连接 Tor 网络... ${percent}%`);
+          
+          if (percent === 100) {
+            updateTorStatus(true);
+            showNotification('Tor 连接成功！');
+            stopProgressMonitoring();
+          }
+        }
+      });
+    }
+
+    // 初始化所有功能
+    setTimeout(() => {
+      initTorrcEditor();
+    }, 100);</script>
+</body>
+</html>
